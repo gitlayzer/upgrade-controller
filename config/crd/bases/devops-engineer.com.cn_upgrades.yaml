@@ -1,0 +1,106 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.14.0
+  name: upgrades.devops-engineer.com.cn
+spec:
+  group: devops-engineer.com.cn
+  names:
+    kind: UpGrade
+    listKind: UpGradeList
+    plural: upgrades
+    singular: upgrade
+    shortNames:
+      - upgrade
+    categories:
+      - all
+  scope: Namespaced
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          description: This is the API to update the Deployment's upgrade
+          type: object
+          properties:
+            spec:
+              description: UpGradeSpec defines the desired state of UpGrade
+              type: object
+              properties:
+                type:
+                  description: Type is the type of the UpGrade
+                  type: string
+                deploymentRef:
+                  description: DeploymentRef is the reference to the deployment that needs to be upgraded
+                  type: object
+                  properties:
+                    name:
+                      description: Name is the name of the deployment
+                      type: string
+                    namespace:
+                      description: Namespace is the namespace of the deployment
+                      type: string
+                  required:
+                    - name
+                    - namespace
+                images:
+                  description: Images is the list of images that needs to be upgraded
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      image:
+                        description: Define the image that needs to be upgraded
+                        type: string
+                    required:
+                      - image
+                upgradeReplicas:
+                  description: Define the number of replicas for the UpGrade
+                  type: integer
+              required:
+                - deploymentRef
+                - images
+                - type
+                - upgradeReplicas
+            status:
+              description: UpGradeStatus defines the observed state of UpGrade
+              type: object
+              properties:
+                status:
+                  description: Status is the status of the upgrade
+                  type: string
+                type:
+                  description: Type is the type of the UpGrader
+                  type: string
+                upgradeReplicas:
+                  description: UpgradeReplicas is the number of replicas for the UpGrade
+                  type: integer
+      subresources:
+        status: {}
+        scale:
+          specReplicasPath: .spec.upgradeReplicas
+          statusReplicasPath: .status.UpGradeReplicas
+      additionalPrinterColumns:
+        - name: UpGraderReplicas
+          type: integer
+          description: UpGraderReplicas is the number of replicas for the UpGrader
+          jsonPath: .spec.upgradeReplicas
+        - name: UpGraderDeployment
+          type: string
+          description: UpGraderDeployment is the deployment name for the UpGrader
+          jsonPath: .spec.deploymentRef.name
+        - name: UpGraderType
+          type: string
+          description: UpGraderType is the type of the UpGrader
+          jsonPath: .spec.type
+        - name: UpGraderStatus
+          type: string
+          description: UpGraderStatus is the status of the UpGrader
+          jsonPath: .status.status
+        - name: Age
+          type: date
+          description: Age is the time when the UpGrader was created
+          jsonPath: .metadata.creationTimestamp

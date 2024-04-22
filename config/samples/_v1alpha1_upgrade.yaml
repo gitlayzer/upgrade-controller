@@ -1,0 +1,12 @@
+apiVersion: devops-engineer.com.cn/v1alpha1
+kind: UpGrade
+metadata:
+  name: upgrade-nginx
+spec:
+  upgradeReplicas: 3
+  type: "upgrade"
+  deploymentRef:
+    name: nginx
+    namespace: default
+  images:
+    - image: nginx:1.25.4
